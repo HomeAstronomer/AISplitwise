@@ -1,5 +1,8 @@
 package com.example.aisplitwise.navigation
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,7 +29,7 @@ fun NavHostInitializer(navController: NavHostController) {
     NavHost(navController = navController, startDestination = SplashRoute) {
         composable<SplashRoute>(
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
             popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
         ) {
@@ -35,9 +38,9 @@ fun NavHostInitializer(navController: NavHostController) {
 
         composable<DashBoardRoute> (
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
+            popEnterTransition =  { fadeIn() },
         ) {
             DashBoard(dashBoardViewModel = hiltViewModel(),navController)
         }
@@ -45,9 +48,9 @@ fun NavHostInitializer(navController: NavHostController) {
 
         composable<LoginScreenRoute> (
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
+            popEnterTransition =  { fadeIn() },
         ) {
             LoginScreen( loginViewModel = hiltViewModel(),
                 navController)
@@ -55,29 +58,29 @@ fun NavHostInitializer(navController: NavHostController) {
 
         composable<SignUpScreenRoute>(
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
-        ) {
+            popEnterTransition =  { fadeIn() },
+            ) {
             SignUpScreen( signUpViewModel = hiltViewModel(),
                 navController = navController)
         }
 
         composable<CreateGroupRoute>(
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
-        ) {
+            popEnterTransition =  { fadeIn() },
+            ) {
             CreateGroupScreen(
                 navController = navController)
         }
 
         composable<LedgerRoute>(
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
+            popEnterTransition =  { fadeIn() },
         ) {
             LedgerScreen(
                 navHostController = navController,
@@ -90,9 +93,9 @@ fun NavHostInitializer(navController: NavHostController) {
 
         composable<ExpenseDialogRoute>(
             enterTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).first() },
-            exitTransition = { slideInOutTransition(slideDirection = SlideDirection.RightToLeft).second() },
+            exitTransition = { fadeOut(tween(300,100)) },
             popExitTransition = { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).second() },
-            popEnterTransition =  { slideInOutTransition(slideDirection = SlideDirection.LeftToRight).first() },
+            popEnterTransition =  { fadeIn() },
         ) {
 
             ExpenseDialog(

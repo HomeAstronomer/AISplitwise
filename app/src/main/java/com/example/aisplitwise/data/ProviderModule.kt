@@ -2,6 +2,7 @@ package com.example.aisplitwise.data
 
 import android.content.Context
 import androidx.room.Room
+import com.example.aisplitwise.data.local.ExpenseDao
 import com.example.aisplitwise.data.local.GroupDao
 import com.example.aisplitwise.data.local.MemberDao
 import com.google.firebase.auth.FirebaseAuth
@@ -56,4 +57,7 @@ object ProviderModule {
 
     @Provides
     fun provideGroupDao(database: AppDatabase): GroupDao = database.groupDao()
+
+    @Provides
+    fun provideExpenseDao(database: AppDatabase): ExpenseDao = database.expenseDao()
 }

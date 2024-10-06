@@ -22,6 +22,8 @@ coil = "2.7.0"
 lottieCompose = "6.0.0"
 googleServices = "4.4.2"
 crashlyticsPlugin_Version = "3.0.2"
+playServicesLocation = "21.3.0"
+mlkitVersion = "16.0.0"
 
 # Kotlin Serialization
 
@@ -59,6 +61,7 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 
 # Navigation Libraries
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "nav_version" }
+mlkit_text_recognition = { group = "com.google.mlkit", name = "text-recognition", version.ref = "mlkitVersion" }
 
 # Hilt Libraries
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
@@ -83,6 +86,7 @@ firebase-storage = { module = "com.google.firebase:firebase-storage"}
 coil = { group = "io.coil-kt", name = "coil", version.ref = "coil" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottieCompose" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 
 [bundles]

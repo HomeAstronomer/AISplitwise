@@ -108,7 +108,6 @@ class CreateGroupViewModel @Inject constructor(
                     members = listOf(it),
                     createdAt = Timestamp(Date()),
                     updatedAt = Timestamp(Date()),
-                    expenses = emptyList(),
                     groupImg = groupImage
                 )
                 groupRepository.createGroup(group, it.uid).collect { dataState ->

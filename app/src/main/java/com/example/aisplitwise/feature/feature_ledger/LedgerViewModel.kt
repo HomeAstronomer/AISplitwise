@@ -16,6 +16,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,7 +28,8 @@ import javax.inject.Inject
 @Immutable
 data class LedgerUIState(
     val group:Group?=null,
-    val member:Member?=null
+    val member:Member?=null,
+    val expense: List<Expense> =emptyList()
 
 )
 
@@ -52,6 +55,13 @@ class LedgerViewModel @Inject constructor(
         viewModelScope.launch (Dispatchers.IO) {
             groupRepository.getGroupFromID(groupId).collect{group->
                 _uiState.update { it.copy(group = group) }
+            }
+
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+           groupRepository.getExpenseFromGroupId(groupId).collect{expense->
+                _uiState.update { it.copy(expense = expense) }
+
             }
         }
     }

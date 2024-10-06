@@ -1,6 +1,7 @@
 package com.example.aisplitwise.data.local
 
 import android.os.Parcelable
+import androidx.annotation.Keep
 import androidx.compose.runtime.Stable
 import androidx.room.ColumnInfo
 import androidx.room.Dao
@@ -15,6 +16,7 @@ import kotlinx.parcelize.Parcelize
 import kotlinx.serialization.Serializable
 
 const val MEMBER_TABLE="member_table"
+@Keep
 @Parcelize
 @Serializable
 @Entity(tableName = MEMBER_TABLE)

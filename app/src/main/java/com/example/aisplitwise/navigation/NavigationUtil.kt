@@ -9,7 +9,7 @@ import androidx.compose.animation.slideOutHorizontally
 
 
 fun slideInOutTransition(
-    duration: Int = 600,
+    duration: Int = 400,
     slideDirection: SlideDirection
 ): Pair<() -> EnterTransition, () -> ExitTransition> {
     return when (slideDirection) {

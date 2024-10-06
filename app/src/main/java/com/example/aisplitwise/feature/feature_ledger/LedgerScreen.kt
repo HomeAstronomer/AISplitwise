@@ -1,6 +1,10 @@
 package com.example.aisplitwise.feature.feature_ledger
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +28,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CalendarToday
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MonetizationOn
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
@@ -44,6 +49,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -79,7 +85,6 @@ fun LedgerScreen(
     }
 
     Scaffold(modifier=Modifier.navigationBarsPadding(),topBar = { LedgerScreenHeader { navHostController.popBackStack() } }) { padding ->
-        uiState.group?.let { group ->
             LazyColumn(Modifier) {
                 item {
                     Column (Modifier
@@ -99,7 +104,7 @@ fun LedgerScreen(
                                         shape = CircleShape
                                     )
                                     .clip(CircleShape)
-                                    .padding(8.dp), data = group.groupImg
+                                    .padding(8.dp), data = uiState.group?.groupImg?:""
                             )
                             Column(
                                 Modifier
@@ -110,7 +115,7 @@ fun LedgerScreen(
                                     text = "Group Name", style = MaterialTheme.typography.bodyMedium
                                 )
                                 Text(
-                                    text = group.name, style = MaterialTheme.typography.titleLarge
+                                    text = uiState.group?.name?:"", style = MaterialTheme.typography.titleLarge
                                 )
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
@@ -121,7 +126,7 @@ fun LedgerScreen(
                                     )
 
                                     Text(
-                                        text = "Members: ${group.members.joinToString(", ") { it.displayName ?: "" }}",
+                                        text = "Members: ${uiState.group?.members?.joinToString(", ") { it.displayName ?: "" }}",
                                         style = MaterialTheme.typography.bodySmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                                         overflow = TextOverflow.Ellipsis,
@@ -133,7 +138,7 @@ fun LedgerScreen(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             OutlinedButton(
                                 onClick = {
-                                    navigateToExpenseDialog.invoke(group.members)
+                                    navigateToExpenseDialog.invoke(uiState.group?.members?: emptyList())
                                 },
                                 modifier = Modifier
                                     .weight(1f)
@@ -155,7 +160,7 @@ fun LedgerScreen(
                             }
                             OutlinedButton(
                                 onClick = {
-                                    navHostController.navigate(AddMemberDialogRoute(groupId = group.id))
+                                    navHostController.navigate(AddMemberDialogRoute(groupId =uiState.group?.id?:""))
                                 },
                                 modifier = Modifier
                                     .weight(1f)
@@ -177,7 +182,7 @@ fun LedgerScreen(
                     }
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }
-                items(group.expenses) { item ->
+                items(uiState.expense) { item ->
                     val isMe by remember {
                         mutableStateOf(item.paidBy.uid == uiState.member?.uid)
                     }
@@ -194,7 +199,7 @@ fun LedgerScreen(
 
             }
         }
-    }
+
 }
 
 @Composable
@@ -211,6 +216,7 @@ fun ExpenseCard(expense: Expense, isMe: Boolean, modifier: Modifier = Modifier) 
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
+        val context= LocalContext.current
         Column(
             modifier = Modifier.padding(16.dp),
             horizontalAlignment = if (isMe) Alignment.Start else Alignment.End // Align based on isMe
@@ -291,6 +297,31 @@ fun ExpenseCard(expense: Expense, isMe: Boolean, modifier: Modifier = Modifier) 
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Created At
+            Row(
+                modifier = Modifier.clickable {
+                    openLocationInMaps(context =context, expense.latitude, expense.longitude)
+                },
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = if (isMe) Arrangement.Start else Arrangement.End // Align date based on isMe
+            ) {
+                Icon(
+                    imageVector = Icons.Default.LocationOn,
+                    contentDescription = "Date",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+
+                Text(
+                    text = "Location: ${expense.latitude}, ${expense.longitude}",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
     }
 }
@@ -324,4 +355,17 @@ fun LedgerScreenHeader(backClick: () -> Unit) {
     }
 
 
+}
+
+fun openLocationInMaps(context: Context, latitude: Double, longitude: Double) {
+    val geoUri = "geo:$latitude,$longitude?q=$latitude,$longitude"
+    val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse(geoUri))
+    mapIntent.setPackage("com.google.android.apps.maps")
+
+    // Check if there's an app that can handle this Intent
+    if (mapIntent.resolveActivity(context.packageManager) != null) {
+        context.startActivity(mapIntent)
+    } else {
+        Toast.makeText(context, "Google Maps not installed", Toast.LENGTH_SHORT).show()
+    }
 }

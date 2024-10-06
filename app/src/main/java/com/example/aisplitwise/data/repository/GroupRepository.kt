@@ -1,6 +1,7 @@
 package com.example.aisplitwise.data.repository
 
 import com.example.aisplitwise.data.local.Expense
+import com.example.aisplitwise.data.local.ExpenseDao
 import com.example.aisplitwise.data.local.Group
 import com.example.aisplitwise.data.local.GroupDao
 import com.example.aisplitwise.data.local.Member
@@ -24,14 +25,19 @@ import javax.inject.Singleton
 class GroupRepository @Inject constructor(
     private  val groupDao:GroupDao,
     private  val memberDao:MemberDao,
+    private  val expenseDao:ExpenseDao,
     private val fireStoreDb: FirebaseFirestore,
 ) {
     fun getGroupsDb(): Flow<List<Group>> {
         return groupDao.getAllFlow()
     }
 
-    suspend fun getGroupFromID(groupId: String):Flow<Group>{
+    fun getGroupFromID(groupId: String):Flow<Group>{
         return groupDao.getGroup(groupId)
+    }
+
+    fun getExpenseFromGroupId(groupId: String): Flow<List<Expense>> {
+        return expenseDao.getExpenseForGroup(groupId)
     }
 
     fun getGroups(member: Member): Flow<DataState<List<Group>>> = flow {
@@ -47,26 +53,11 @@ class GroupRepository @Inject constructor(
                     .get()
                     .await()
 
-                val groupsWithExpenses =
-                    collection.documents.mapNotNull { document ->
-                        val group = document.toObject(Group::class.java)
-                        group?.let {
-                                // Fetch the expenses sub-collection for this group
-                                val expensesSnapshot = fireStoreDb.collection("groups")
-                                    .document(document.id)
-                                    .collection("expenses")
-                                    .get()
-                                    .await()
-
-                                val expenses = expensesSnapshot.toObjects(Expense::class.java)
-
-                                // Attach expenses to the group object or modify it accordingly
-                                group.apply { this.expenses = expenses }
-                            }
-
-                    }
-                groupDao.insertAll(groupsWithExpenses)
-                emit(DataState.Success(groupsWithExpenses))
+                val groups = collection.documents.mapNotNull { document ->
+                    document.toObject(Group::class.java)
+                }
+                groupDao.insertAll(groups)
+                emit(DataState.Success(groups))
 
             } catch (e: Exception) {
                 emit(DataState.Error(e.message ?: "Error fetching groups"))
@@ -82,7 +73,7 @@ class GroupRepository @Inject constructor(
 
     fun createGroup(group: Group, uid: String): Flow<DataState<Unit>> = flow {
         try {
-            val groupMap = group.copy(expenses = emptyList()).toMap()
+            val groupMap = group.toMap()
             fireStoreDb.collection("groups")
                 .document(group.id)
                 .set(groupMap)
@@ -166,7 +157,7 @@ class GroupRepository @Inject constructor(
                 .collection("expenses")
                 .document().id
 
-            val updatedExpense = expense.copy(id = expenseId)
+            val updatedExpense = expense.copy(id = expenseId, groupId = group.id)
             val expenseMap = updatedExpense.toMap()
 
             // Add the expense to Firestore
@@ -176,8 +167,13 @@ class GroupRepository @Inject constructor(
                 .document(expenseId)
                 .set(expenseMap)
                 .await() // Use await to work with coroutines
-            val newExpenseList=group.expenses+updatedExpense
-            groupDao.updateExpensesAndTimestamp(group.id,newExpenseList, Timestamp(Date()))
+            fireStoreDb.collection("groups")
+                .document(group.id)
+                .update("updatedAt",updatedExpense.updatedAt)
+                .await()
+
+            expenseDao.insert(updatedExpense)
+            groupDao.updateExpensesAndTimestamp(group.id, Timestamp(Date()))
             emit(DataState.Success(Unit)) // Emit success state with no data
 
         } catch (e: Exception) {

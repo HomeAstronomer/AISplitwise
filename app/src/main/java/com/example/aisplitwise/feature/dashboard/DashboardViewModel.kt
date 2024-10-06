@@ -93,7 +93,6 @@ class DashboardViewModel @Inject constructor(
                     members = listOf(it),
                     createdAt = Timestamp(Date()),
                     updatedAt = Timestamp(Date()),
-                    expenses = emptyList()
                 )
                 groupRepository.createGroup(group, it.uid).collect { dataState ->
                     _uiState.update { it.copy(showLoader = false) }

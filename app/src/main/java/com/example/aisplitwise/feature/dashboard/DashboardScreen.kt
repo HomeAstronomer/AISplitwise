@@ -273,7 +273,6 @@ fun DashboardContentPreview() {
                     id = "group1",
              name = "Weekend Getaway",
              members = emptyList(),
-             expenses = listOf(), // Add dummy expenses if needed
              createdAt = Timestamp(Date()),
              updatedAt = Timestamp(Date()),
              groupImg = "https://example.com/sample-group-img.jpg" // Replace with a valid image URL

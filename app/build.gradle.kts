@@ -84,6 +84,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.android.gradle)
     implementation(libs.firebase.firestore.ktx)
+    implementation(libs.play.services.location)
     ksp(libs.hilt.android.compiler)
     implementation(libs.hilt.androidx.navigation.compose)
 
@@ -119,6 +120,8 @@ dependencies {
     implementation(libs.lottie.compose)
 
     implementation(libs.gson)
+
+    implementation(libs.mlkit.text.recognition)
 
 
 
